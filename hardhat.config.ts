@@ -25,12 +25,12 @@ task("accounts", "Prints the list of accounts", async (args, hre) => {
 
 const config: HardhatUserConfig = {
   solidity: "0.4.21",
-  defaultNetwork: "rinkeby",
+  defaultNetwork: "ropsten",
   networks: {
     hardhat: {},
-    rinkeby: {
-      url: `https://eth-rinkeby.alchemyapi.io/v2/${process.env['ALCHEMYIO_KEY']}`,
-      accounts: [process.env['RINKEBY_PRIV_KEY1']]
+    ropsten: {
+      url: `https://eth-ropsten.alchemyapi.io/v2/${process.env['ALCHEMYIO_KEY']}`,
+      accounts: [process.env['ROPSTEN_PRIV_KEY1']],
     }
   },
   paths: {
@@ -40,7 +40,7 @@ const config: HardhatUserConfig = {
     artifacts: "./artifacts"
   },
   mocha: {
-    timeout: 200000
+    timeout: 99999999999
   }
 };
 
