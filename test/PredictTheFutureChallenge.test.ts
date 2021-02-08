@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { BigNumber, Contract, Signer, utils } from "ethers";
 
-const fromAddress = '0x2810d5E289f885d25437743A11C6159F82ca5d28';
+const challengeAddress = "0xC9cA1650c7d6cBD81F97928266aF0626C20FBEe8";
 describe("PredictTheFutureChallenge", function () {
   let deployer: Signer;
   let attacker: Signer;
@@ -19,17 +19,16 @@ describe("PredictTheFutureChallenge", function () {
   });
 
   it("Should predict", async function () {
-    const challengeAddress = "0xA087AA95D33687fbA77242425A600636d467f389";
     const challenge = await ethers.getContractAt("PredictTheFutureChallenge", challengeAddress);
     // challenge = await Challenge.deploy({ value: utils.parseEther('1.0') });
     // await challenge.deployed();
 
-    // const Solution = await ethers.getContractFactory("PredictTheFutureSolution", attacker);
-    // const solution = await Solution.deploy(challengeAddress, { value: getWei('1.0'), gasLimit: 6500000 });
-    // await solution.deployed();
-    const solution = await ethers.getContractAt("PredictTheFutureSolution", "0xA7e241317E742e8506e5f033d36085E13dbC3CAD");
+    const Solution = await ethers.getContractFactory("PredictTheFutureSolution", attacker);
+    const solution = await Solution.deploy(challengeAddress, { value: getWei('1.0'), gasLimit: 6500000 });
+    await solution.deployed();
+    // const solution = await ethers.getContractAt("PredictTheFutureSolution", "0xA7e241317E742e8506e5f033d36085E13dbC3CAD");
 
-    console.log('solution deployed');
+    console.log('solution deployed at ', solution.address);
 
     for (let i = 0; i <= 1000; i++) {
       console.log(`[${i}] trickSettle...`);
@@ -44,3 +43,22 @@ describe("PredictTheFutureChallenge", function () {
     }
   });
 })
+
+const readChallengeStorage = async () => {
+  const abiCoder = new ethers.utils.AbiCoder();
+  const fieldNames = [
+    // 'address',
+    'uint8',
+    'uint256'
+  ];
+
+  for (const i in fieldNames) {
+    const field = fieldNames[i];
+    const rawSlot = await ethers.provider.getStorageAt(challengeAddress, `0x${i}`);
+    console.log('rawSlot', field, rawSlot, ethers.version);
+    const value = abiCoder.decode([field], rawSlot);
+    console.log(`val at ${i}/${field}: ${value}`);
+  };
+  return;
+
+}
